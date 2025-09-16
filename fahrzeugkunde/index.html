@@ -29,19 +29,39 @@
 
     <main>
         <div class="container">
-            <div class="fahrzeug-info" id="fahrzeug-info">
-                <h2 id="fahrzeug-title">Wähle ein Fahrzeug</h2>
-                <img id="fahrzeug-image" src="" alt="Fahrzeugbild" style="display:none; max-width: 100%; height: auto;">
-                <p id="fahrzeug-description"></p>
-                <button id="start-uebung-button" style="display:none;" onclick="startUebung()">Übungen starten</button>
-            </div>
-
             <div class="fahrzeug-list">
                 <button class="fahrzeug-button" onclick="showFahrzeugInfo('mtw')">MTW</button>
                 <button class="fahrzeug-button" onclick="showFahrzeugInfo('hlf20')">HLF20/16</button>
                 <button class="fahrzeug-button" onclick="showFahrzeugInfo('tlf3000')">TLF3000 ST</button>
                 <button class="fahrzeug-button" onclick="showFahrzeugInfo('lf8')">LF8</button>
             </div>
+            <div class="fahrzeug-info" id="fahrzeug-info" style="background-image: url('/picture/fahrzeug.png'); background-position: right 87%; background-size: 40%; background-repeat: no-repeat;">
+                <h2 id="fahrzeug-title">Wähle ein Fahrzeug</h2>
+                <img id="fahrzeug-image" src="" alt="" style="display:none;">
+                <p id="fahrzeug-description"></p>
+                <button id="start-uebung-button" style="display:none;" onclick="startUebung()">Übungen starten</button>
+            </div>
+            <section id="uebung-section" style="display:none;">
+                <div class="quiz-container">
+                    <div class="quiz-header">
+                        <h3 id="quiz-title">Übung</h3>
+                        <div id="quiz-progress">Frage <span id="quiz-index">1</span>/<span id="quiz-total">1</span></div>
+                    </div>
+
+                    <div class="quiz-card">
+                        <p id="quiz-question">Frage kommt hier hin…</p>
+                        <div id="quiz-options" class="quiz-options"></div>
+                    </div>
+
+                    <div class="quiz-actions">
+                        <button id="quiz-prev" onclick="prevQuestion()" disabled>Zurück</button>
+                        <button id="quiz-next" onclick="nextQuestion()">Weiter</button>
+                        <button id="quiz-finish" onclick="finishQuiz()" style="display:none;">Auswertung</button>
+                    </div>
+
+                    <div id="quiz-result" class="quiz-result" style="display:none;"></div>
+                </div>
+            </section>
         </div>
     </main>
     <script src="/fahrzeugkunde/script.js"></script>
