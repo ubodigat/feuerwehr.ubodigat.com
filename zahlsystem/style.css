@@ -123,6 +123,32 @@
     margin-bottom: 2%;
 }
 
+@media (min-width: 951px) {
+    #produkte {
+        position: sticky;
+        top: 0;
+        bottom: 0;
+        margin-top: auto;
+        margin-bottom: auto;
+        align-self: flex-start;
+        max-height: calc(100vh - 220px);
+    }
+
+    .order-section {
+        display: flex;
+        flex-direction: column;
+        max-height: calc(100vh - 220px);
+        box-sizing: border-box;
+    }
+
+    .order-section #order-list {
+        overflow-y: auto;
+        flex: 1 1 auto;
+        min-height: 0;
+        padding-right: 4px;
+    }
+}
+
 #bestellungen-list {
     width: 100%;
     max-width: 80%;
