@@ -3,6 +3,8 @@ let confirmCallback = null;
 let confirmTitle = '';
 let confirmMode = '';
 let currentOrder = {};
+let orderBaseTotal = 0;
+let trinkgeldAmount = 0;
 document.addEventListener('DOMContentLoaded', function() {
     const adminBtn = document.getElementById('admin-btn');
     const adminModal = document.getElementById('admin-modal');
@@ -63,6 +65,8 @@ document.addEventListener('DOMContentLoaded', function() {
         document.getElementById('custom-amount').oninput = calculateRueckgeld;
         document.getElementById('use-custom-amount').onclick = calculateRueckgeld;
         document.getElementById('submit-order').onclick = submitOrder;
+        const roundUpBtn = document.getElementById('round-up-btn');
+        if (roundUpBtn) roundUpBtn.onclick = handleRoundUp;
     }
     if (adminBtn && adminModal && closeAdminModal) {
         adminBtn.onclick = (e) => {
@@ -105,6 +109,21 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 });
+
+function handleRoundUp() {
+    const currentDue = orderBaseTotal + trinkgeldAmount;
+    const cents = Math.round(currentDue * 100);
+    const nextWholeEuroCents = cents % 100 === 0 ? cents + 100 : Math.ceil(cents / 100) * 100;
+
+    trinkgeldAmount = Math.round((nextWholeEuroCents / 100 - orderBaseTotal) * 100) / 100;
+    updateBetragModal();
+    calculateRueckgeld();
+}
+
+function updateBetragModal() {
+    document.getElementById('betrag-modal').textContent = (orderBaseTotal + trinkgeldAmount).toFixed(2);
+    renderModalOrderList();
+}
 
 function handlePresetAmount(amount) {
     const input = document.getElementById('custom-amount');
@@ -175,13 +194,45 @@ function updateTotalPrice(price) {
 function openPaymentModal() {
     const modal = document.getElementById('payment-modal');
     document.body.classList.add('modal-open');
-    const total = parseFloat(document.getElementById('total-price').textContent.replace('Gesamtpreis: ', '').replace('€', '')) || 0;
-    document.getElementById('betrag-modal').textContent = total.toFixed(2);
+    orderBaseTotal = parseFloat(document.getElementById('total-price').textContent.replace('Gesamtpreis: ', '').replace('€', '')) || 0;
+    trinkgeldAmount = 0;
+    updateBetragModal();
     setCustomAmount('');
     document.getElementById('rueckgeld').textContent = '0';
     modal.classList.remove('hidden');
     setupCustomKeypad();
     calculateRueckgeld();
+}
+
+function renderModalOrderList() {
+    const modalList = document.getElementById('modal-order-list');
+    const modalTotal = document.getElementById('modal-total-price');
+    if (!modalList) return;
+    modalList.innerHTML = '';
+
+    Object.entries(currentOrder).forEach(([name, obj]) => {
+        const { count, price } = obj;
+
+        const listItem = document.createElement('li');
+        listItem.className = 'order-list-item';
+        listItem.innerHTML = `
+            <span class="order-product-name">${count > 1 ? count + "x " : ""}${name}</span>
+            <span class="order-product-price">${(price * count).toFixed(2)}€</span>
+        `;
+        modalList.appendChild(listItem);
+    });
+
+    if (trinkgeldAmount > 0) {
+        const tipItem = document.createElement('li');
+        tipItem.className = 'order-list-item tip-item';
+        tipItem.innerHTML = `
+            <span class="order-product-name">Trinkgeld</span>
+            <span class="order-product-price">${trinkgeldAmount.toFixed(2)}€</span>
+        `;
+        modalList.appendChild(tipItem);
+    }
+
+    if (modalTotal) modalTotal.textContent = 'Gesamtpreis: ' + (orderBaseTotal + trinkgeldAmount).toFixed(2) + '€';
 }
 
 function closePaymentModal() {
@@ -190,6 +241,7 @@ function closePaymentModal() {
     const keypad = document.getElementById('custom-keypad');
     if (keypad) keypad.remove();
     plusMode = false;
+    trinkgeldAmount = 0;
     if (document.getElementById('plus-btn')) {
         document.getElementById('plus-btn').style.background = '#dbdbdb';
         document.getElementById('plus-btn').style.color = '#2b2b2b';
@@ -253,11 +305,14 @@ function setupCustomKeypad() {
 
 function submitOrder() {
     const orderList = document.getElementById('order-list');
-    const totalOrderPrice = document.getElementById('total-price').textContent;
     const items = Array.from(orderList.children).map(item =>
         item.querySelector('.order-product-name').textContent + ' - ' + item.querySelector('.order-product-price').textContent
     );
     if (items.length === 0) return closePaymentModal();
+    if (trinkgeldAmount > 0) {
+        items.push('Trinkgeld - ' + trinkgeldAmount.toFixed(2) + '€');
+    }
+    const totalOrderPrice = 'Gesamtpreis: ' + (orderBaseTotal + trinkgeldAmount).toFixed(2) + '€';
     let rueckgeld = "0.00";
     let rueckgeldType = "rueckgeld";
     if (document.getElementById('rueckgeld')) {
@@ -290,6 +345,7 @@ function submitOrder() {
         displayOrdersFromLocalStorage(getEditModeFromStorage());
     }
     currentOrder = {};
+    trinkgeldAmount = 0;
     renderOrderList();
     document.getElementById('total-price').textContent = 'Gesamtpreis: 0€';
     closePaymentModal();
@@ -395,11 +451,13 @@ function updateProductSales() {
                 if (match) {
                     const count = parseInt(match[1], 10);
                     const product = match[2].trim();
+                    if (product === 'Trinkgeld') return;
                     productSales[product] = (productSales[product] || 0) + count;
                 } else {
                     const fallbackMatch = itemText.match(/^(.+?)\s*-/);
                     if (fallbackMatch) {
                         const product = fallbackMatch[1].trim();
+                        if (product === 'Trinkgeld') return;
                         productSales[product] = (productSales[product] || 0) + 1;
                     }
                 }
@@ -413,11 +471,13 @@ function updateProductSales() {
                     if (match) {
                         const count = parseInt(match[1], 10);
                         const product = match[2].trim();
+                        if (product === 'Trinkgeld') return;
                         productSales[product] = (productSales[product] || 0) + count;
                     } else {
                         const fallbackMatch = itemText.match(/^(.+?)\s*-/);
                         if (fallbackMatch) {
                             const product = fallbackMatch[1].trim();
+                            if (product === 'Trinkgeld') return;
                             productSales[product] = (productSales[product] || 0) + 1;
                         }
                     }
