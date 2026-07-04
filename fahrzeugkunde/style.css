@@ -66,8 +66,8 @@
 }
 
 #start-uebung-button {
-    margin-top: 20px;
-    margin-left: 45%;
+    margin: 16px auto 0 auto;
+    display: inline-block;
     padding: 10px 20px;
     background-color: #007BFF;
     color: #ffffff;
@@ -80,14 +80,14 @@
     background-color: #0056b3;
 }
 
-* #fahrzeug-image {
-    width: 320px;
-    height: 200px;
-    object-fit: cover;
+#fahrzeug-image {
     display: block;
-    margin: 16px 0;
+    margin: 0 auto 20px auto;
+    width: 350px;
+    height: 220px;
+    object-fit: cover;
     border-radius: 8px;
-    box-shadow: 0 2px 8px #0000001a;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 .quiz-container {
@@ -179,4 +179,213 @@
     background: #e8f5e9;
     border: 1px solid #c8e6c9;
     border-radius: 8px;
+}
+
+.fahrzeug-info {
+    position: relative;
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px #0000001a;
+    overflow: hidden;
+    padding: 20px;
+    text-align: center;
+}
+
+.fahrzeug-deko {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: clamp(240px, 22vw, 360px);
+    height: clamp(140px, 16vw, 260px);
+    background-image: url('/picture/fahrzeug.png');
+    background-repeat: no-repeat;
+    background-size: contain;
+    background-position: right top;
+    pointer-events: none;
+    opacity: .9;
+    z-index: 0;
+    transform: translate(2px, -4px);
+    margin-top: -90px;
+}
+
+#fahrzeug-title,
+#fahrzeug-description,
+#start-uebung-button,
+#fahrzeug-image {
+    position: relative;
+    z-index: 1;
+}
+
+#fahrzeug-title {
+    margin-top: 0;
+}
+
+.uebung-status {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    background: #0d6efd;
+    color: #fff;
+    font-weight: 600;
+    font-size: 12px;
+    padding: 6px 10px;
+    border-radius: 999px;
+    box-shadow: 0 2px 8px #0000001a;
+    z-index: 2;
+    display: none;
+}
+
+.fahrzeug-info.uebung-aktiv {
+    box-shadow: 0 0 0 3px rgba(13, 110, 253, .25), 0 2px 10px rgba(0, 0, 0, .1);
+}
+
+.compartment-wrapper {
+    max-width: 1100px;
+    margin: 16px auto 28px;
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 6px 18px #0000001a;
+    padding: 16px;
+}
+
+.compartment-stage {
+    position: relative;
+    overflow: hidden;
+    border-radius: 10px;
+    background: #f7f7f7;
+}
+
+#compartment-image {
+    display: block;
+    width: 100%;
+    height: auto;
+    user-select: none;
+    pointer-events: none;
+}
+
+#compartment-hotspots {
+    position: absolute;
+    inset: 0;
+}
+
+.hotspot {
+    position: absolute;
+    border: 3px solid #e01111;
+    border-radius: 4px;
+    box-shadow: 0 0 0 2px rgba(224, 17, 17, .25);
+    cursor: pointer;
+    transition: transform .08s ease, box-shadow .15s ease;
+}
+
+.hotspot:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 0 0 2px rgba(224, 17, 17, .4), 0 6px 12px #00000012;
+}
+
+.hotspot:focus-visible {
+    outline: 3px solid #0d6efd;
+    outline-offset: 2px;
+}
+
+.hotspot .tag {
+    position: absolute;
+    top: -28px;
+    left: -3px;
+    background: #fff;
+    color: #0a2a4a;
+    border: 2px solid #e01111;
+    border-bottom: none;
+    border-radius: 6px 6px 0 0;
+    padding: 4px 10px;
+    font-weight: 700;
+    font-size: 14px;
+    min-width: 60px;
+    text-align: center;
+    box-shadow: 0 -2px 0 rgba(224, 17, 17, .15);
+}
+
+.compartment-toolbar {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 10px;
+}
+
+.side-switch button {
+    background: #e9ecef;
+    border: none;
+    border-radius: 8px;
+    padding: 8px 12px;
+    cursor: pointer;
+}
+
+.side-switch button.active {
+    background: #0d6efd;
+    color: #fff;
+}
+
+.compartment-toolbar .hint {
+    color: #555;
+    font-size: 14px;
+}
+
+.compartment-area {
+    position: absolute;
+    border: 2px solid rgba(0, 123, 255, 0.9);
+    background-color: rgba(0, 123, 255, 0.25);
+    cursor: pointer;
+    border-radius: 6px;
+    transition: all 0.2s ease-in-out;
+}
+
+.compartment-area:hover {
+    border-color: #ff0000;
+    background-color: rgb(255, 0, 0);
+    box-shadow: 0 0 12px rgba(0, 123, 255, 0.8);
+    transform: scale(1.05);
+}
+
+.compartment-area.selected {
+    border: 3px solid #28a745;
+    background-color: rgba(40, 167, 69, 0.55);
+    box-shadow: 0 0 16px rgba(40, 167, 69, 0.9);
+    transform: scale(1.08);
+}
+
+#overlay-wrap {
+    position: relative;
+    display: inline-block;
+}
+
+#overlay-dim {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, .28);
+    pointer-events: none;
+}
+
+.overlay-box {
+    position: absolute;
+    box-sizing: border-box;
+    border: 2px solid rgba(0, 200, 255, 0.9);
+    background: rgba(0, 200, 255, 0.28);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: transform .15s ease, box-shadow .15s ease, background-color .15s ease, border-color .15s ease;
+    outline: none;
+}
+
+.overlay-box:hover {
+    background: rgba(0, 200, 255, 0.45);
+    border-color: #00b7ff;
+    box-shadow: 0 0 14px rgba(0, 183, 255, 0.85);
+    transform: scale(1.03);
+}
+
+.overlay-box.selected {
+    border: 3px solid #2ecc71;
+    background: rgba(46, 204, 113, 0.55);
+    box-shadow: 0 0 18px rgba(46, 204, 113, 0.9);
+    transform: scale(1.05);
 }
